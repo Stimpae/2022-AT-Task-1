@@ -14,38 +14,72 @@
     <Filter Include="Framework">
       <UniqueIdentifier>{c0eb687a-98ce-4183-b008-5f4ae74da911}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Systems">
+      <UniqueIdentifier>{1e386bd9-278e-46a8-9b23-905687b72c22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Graphics.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
     <ClCompile Include="Framework.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="DeviceResources.cpp">
-      <Filter>Framework</Filter>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graphics.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
     <ClInclude Include="Framework.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Game</Filter>
+    <ClInclude Include="Camera.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="DeviceResources.h">
+    <ClInclude Include="SystemDefinitions.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="pch.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderStructures.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorHelper.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>Resources</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>Resources</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
