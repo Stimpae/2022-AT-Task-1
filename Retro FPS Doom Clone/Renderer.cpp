@@ -11,7 +11,7 @@ using namespace DirectX;
 Renderer::Renderer(std::shared_ptr<Graphics> _graphics)
 {
 	m_graphics = _graphics;
-	CreateWindowSizeDependentResources();
+	m_textureManager = std::make_unique<TextureManager>();
 	CreateDeviceDependentResources();
 }
 
@@ -28,7 +28,7 @@ void Renderer::CreateDeviceDependentResources()
 			void* shader_byte_code = nullptr;
 			size_t size_shader = 0;
 
-			CompileShaderFromFile(L"VertexShader.hlsl", "vsmain", "vs_5_0", &shader_byte_code, &size_shader);
+			CompileVertexShaderFromFile(L"VertexShader.hlsl", "vsmain", "vs_5_0", &shader_byte_code, &size_shader);
 			
 			Error::ThrowIfFailed(m_graphics->GetDevice()->CreateVertexShader(shader_byte_code,
 				size_shader, nullptr, &m_vertexShader), "Create Vertex Shader");
@@ -36,7 +36,7 @@ void Renderer::CreateDeviceDependentResources()
 			static const D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 			{
 				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT , 0 , 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			};
 
 			Error::ThrowIfFailed(m_graphics->GetDevice()->CreateInputLayout(vertexDesc,ARRAYSIZE(vertexDesc),
@@ -51,8 +51,8 @@ void Renderer::CreateDeviceDependentResources()
 			void* shader_byte_code = nullptr;
 			size_t size_shader = 0;
 
-			CompileShaderFromFile(L"PixelShader.hlsl", "psmain", "ps_5_0", &shader_byte_code, &size_shader);
-
+			CompilePixelShaderFromFile(L"PixelShader.hlsl", "psmain", "ps_5_0", &shader_byte_code, &size_shader);
+		
 			Error::ThrowIfFailed(m_graphics->GetDevice()->CreatePixelShader(shader_byte_code,
 				size_shader,nullptr,&m_pixelShader),"Create Pixel Shader");
 
@@ -66,17 +66,59 @@ void Renderer::CreateDeviceDependentResources()
 	auto CreateCubeTask = CreatePSTask.then(
 		[this]()
 		{
-			// Load mesh vertices. Each vertex has a position and a color.
-			static const VertexPositionColor cubeVertices[] =
+			DirectX::XMFLOAT3 vertexPositions[] =
 			{
-				{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
-				{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
-				{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
-				{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
-				{XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
-				{XMFLOAT3(0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
-				{XMFLOAT3(0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
-				{XMFLOAT3(0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
+				{DirectX::XMFLOAT3(-0.5f,-0.5f,-0.5f)},
+				{DirectX::XMFLOAT3(-0.5f,0.5f,-0.5f)},
+				{DirectX::XMFLOAT3(0.5f,0.5f,-0.5f)},
+				{DirectX::XMFLOAT3(0.5f,-0.5f,-0.5f)},
+
+				{DirectX::XMFLOAT3(0.5f,-0.5f,0.5f)},
+				{DirectX::XMFLOAT3(0.5f,0.5f,0.5f)},
+				{DirectX::XMFLOAT3(-0.5f,0.5f,0.5f)},
+				{DirectX::XMFLOAT3(-0.5f,-0.5f,0.5f)}
+			};
+
+			DirectX::XMFLOAT2 textureCoordinates[] =
+			{
+				{DirectX::XMFLOAT2(0.0f, 0.0f)},
+				{DirectX::XMFLOAT2(0.0f, 1.0f)},
+				{DirectX::XMFLOAT2(1.0f, 0.0f)},
+				{DirectX::XMFLOAT2(1.0f, 1.0f)},
+			};
+
+			// Load mesh vertices. Each vertex has a position and a color.
+			static const VertexPositionTexture cubeVertices[] =
+			{
+				{vertexPositions[0], textureCoordinates[1]},
+				{vertexPositions[1], textureCoordinates[0]},
+				{vertexPositions[2], textureCoordinates[2]},
+				{vertexPositions[3], textureCoordinates[3]},
+
+				{vertexPositions[4], textureCoordinates[1]},
+				{vertexPositions[5], textureCoordinates[0]},
+				{vertexPositions[6], textureCoordinates[2]},
+				{vertexPositions[7], textureCoordinates[3]},
+
+				{vertexPositions[1], textureCoordinates[1]},
+				{vertexPositions[6], textureCoordinates[0]},
+				{vertexPositions[5], textureCoordinates[2]},
+				{vertexPositions[2], textureCoordinates[3]},
+
+				{vertexPositions[7], textureCoordinates[1]},
+				{vertexPositions[0], textureCoordinates[0]},
+				{vertexPositions[3], textureCoordinates[2]},
+				{vertexPositions[4], textureCoordinates[3]},
+
+				{vertexPositions[3], textureCoordinates[1]},
+				{vertexPositions[2], textureCoordinates[0]},
+				{vertexPositions[5], textureCoordinates[2]},
+				{vertexPositions[4], textureCoordinates[3]},
+
+				{vertexPositions[7], textureCoordinates[1]},
+				{vertexPositions[6], textureCoordinates[0]},
+				{vertexPositions[1], textureCoordinates[2]},
+				{vertexPositions[0], textureCoordinates[3]},
 			};
 
 			D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
@@ -95,23 +137,23 @@ void Renderer::CreateDeviceDependentResources()
 			// first triangle of this mesh.
 			static const unsigned short cubeIndices[] =
 			{
-				0,2,1, // -x
-				1,2,3,
+				0,1,2,
+				2,3,0,
 
-				4,5,6, // +x
-				5,7,6,
+				4,5,6,
+				6,7,4,
 
-				0,1,5, // -y
-				0,5,4,
+				8,9,10,
+				10,11,8,
 
-				2,6,7, // +y
-				2,7,3,
+				12,13,14,
+				14,15,12,
 
-				0,4,6, // -z
-				0,6,2,
+				16,17,18,
+				18,19,16,
 
-				1,3,7, // +z
-				1,7,5,
+				20,21,22,
+				22,23,20
 			};
 
 			m_indexCount = ARRAYSIZE(cubeIndices);
@@ -131,38 +173,13 @@ void Renderer::CreateDeviceDependentResources()
 		});
 }
 
-// This can eventually be replaced by the camera 
-void Renderer::CreateWindowSizeDependentResources()
-{
-	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.7f, 1.5f, 0.f);
-	DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, -0.1f, 0.0f, 0.f);
-	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.f);
-
-	DirectX::XMStoreFloat4x4(&m_constantBufferData.view,DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixLookAtRH(eye,at,up)));
-
-	DirectX::XMStoreFloat4x4(&m_constantBufferData.projection,DirectX::XMMatrixTranspose(
-		DirectX::XMMatrixPerspectiveFovRH(2.0f * std::atan(std::tan(DirectX::XMConvertToRadians(70) * 0.5f) / 0.1)
-			,1,0.01f,100.0f)));
-}
-
 void Renderer::Update()
 {
-	
-		// Convert degrees to radians, then convert seconds to rotation angle
-		float radiansPerSecond = XMConvertToRadians(2);
-		double totalRotation = 2 * radiansPerSecond;
-		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
-
-		XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(radians)));
 
 }
 
 void Renderer::Render()
 {
-	// think we need a reference to the camera for the renderer to render things properly
-
-	// Will only render the geomtry once the 
 	if (!m_loadingComplete)
 	{
 		return;
@@ -170,18 +187,13 @@ void Renderer::Render()
 
 	auto deviceContext = m_graphics->GetDeviceContext();
 
-	// Prepare the constant buffer to send it to the graphics device.
-	deviceContext->UpdateSubresource(m_constantBuffer.Get(),0,NULL,&m_constantBufferData,0,0);
-
 	// Set up the IA stage by setting the input topology and layout.
-	UINT stride = sizeof(VertexPositionColor);
+	UINT stride = sizeof(VertexPositionTexture);
 	UINT offset = 0;
 
 	deviceContext->IASetVertexBuffers(0,1,m_vertexBuffer.GetAddressOf(),&stride,&offset);
 
 	deviceContext->IASetIndexBuffer(m_indexBuffer.Get(),DXGI_FORMAT_R16_UINT,0);
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	deviceContext->IASetInputLayout(m_inputLayout.Get());
 
@@ -194,14 +206,48 @@ void Renderer::Render()
 	// Set up the pixel shader
 	deviceContext->PSSetShader(m_pixelShader.Get(),nullptr,0);
 
-	// Draw the object (assign this individualy to each object instead of like this?
-	deviceContext->DrawIndexed(m_indexCount,0,0);
+	//UpdateConstantBuffer(m_constantBufferData);
 }
 
-void Renderer::CompileShaderFromFile(const wchar_t* _file, const char* _entryPoint, const char* _target, void** _shaderByteCode, size_t* _byteCodeSize)
+void Renderer::UpdateConstantBuffer(ModelViewProjectionConstantBuffer buffer, unsigned int _indexCount)
+{
+	if (!m_loadingComplete)
+	{
+		return;
+	}
+
+	auto deviceContext = m_graphics->GetDeviceContext();
+	
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Prepare the constant buffer to send it to the graphics device.
+	deviceContext->UpdateSubresource(m_constantBuffer.Get(), 0, NULL, &buffer, 0, 0);
+
+	deviceContext->DrawIndexed(_indexCount, 0, 0);
+	// Draw the object (assign this individualy to each object instead of like this?
+	
+}
+
+void Renderer::UpdatePixelShaderResources(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> resources)
+{
+	auto deviceContext = m_graphics->GetDeviceContext();
+	deviceContext->PSSetShaderResources(0, 1, resources.GetAddressOf());
+}
+
+Texture* Renderer::CreateTexture(const wchar_t* _filePath)
+{
+	return m_textureManager->CreateTextureFromFIle(_filePath, m_graphics.get());
+}
+
+void Renderer::EnabledAlphaBlending(bool enabled)
+{
+	m_graphics->EnableAlphaBlending(enabled);
+}
+
+void Renderer::CompilePixelShaderFromFile(const wchar_t* _file, const char* _entryPoint, const char* _target, void** _shaderByteCode, size_t* _byteCodeSize)
 {
 	ID3DBlob* error_blob = nullptr;
-	if (!SUCCEEDED(D3DCompileFromFile(_file, nullptr, nullptr, _entryPoint, _target, 0, 0, &m_blob, &error_blob)))
+	if (!SUCCEEDED(D3DCompileFromFile(_file, nullptr, nullptr, _entryPoint, _target, 0, 0, &m_pixelBlob, &error_blob)))
 	{
 		if (error_blob)
 		{
@@ -209,16 +255,24 @@ void Renderer::CompileShaderFromFile(const wchar_t* _file, const char* _entryPoi
 		}
 	}
 
-	*_shaderByteCode = m_blob->GetBufferPointer();
-	*_byteCodeSize = m_blob->GetBufferSize();
+	*_shaderByteCode = m_pixelBlob->GetBufferPointer();
+	*_byteCodeSize = m_pixelBlob->GetBufferSize();
 }
 
-void Renderer::CompileShaderRelease()
+void Renderer::CompileVertexShaderFromFile(const wchar_t* _file, const char* _entryPoint, const char* _target, void** _shaderByteCode, size_t* _byteCodeSize)
 {
-	if (m_blob)
+	ID3DBlob* error_blob = nullptr;
+	if (!SUCCEEDED(D3DCompileFromFile(_file, nullptr, nullptr, _entryPoint, _target, 0, 0, &m_vertexBlob, &error_blob)))
 	{
-		m_blob->Release();
+		if (error_blob)
+		{
+			error_blob->Release();
+		}
 	}
+
+	*_shaderByteCode = m_vertexBlob->GetBufferPointer();
+	*_byteCodeSize = m_vertexBlob->GetBufferSize();
 }
+
 
 

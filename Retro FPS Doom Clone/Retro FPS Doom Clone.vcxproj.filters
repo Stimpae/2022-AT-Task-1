@@ -14,8 +14,23 @@
     <Filter Include="Framework">
       <UniqueIdentifier>{c0eb687a-98ce-4183-b008-5f4ae74da911}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Systems">
+    <Filter Include="Core\ResourceManager">
+      <UniqueIdentifier>{b79d030b-4a88-4e15-9ae1-5039e2cea91c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\ResourceManager\TextureManager">
+      <UniqueIdentifier>{9f378104-7ee0-4d0d-9935-60c237492b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Systems">
       <UniqueIdentifier>{1e386bd9-278e-46a8-9b23-905687b72c22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Camera">
+      <UniqueIdentifier>{e792a942-c299-4626-b1e3-851eac152865}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Entities">
+      <UniqueIdentifier>{ec4981ed-82f1-43e4-829b-3bfb5f2d337c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Levels">
+      <UniqueIdentifier>{6b90ed35-1f9a-4a39-aa6f-429befae60f3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -23,28 +38,61 @@
     <ClCompile Include="Framework.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>Systems</Filter>
+      <Filter>Framework\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Graphics.cpp">
-      <Filter>Systems</Filter>
+      <Filter>Framework\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
-      <Filter>Systems</Filter>
+      <Filter>Framework\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Framework\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Core\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Core\Entities</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Core</Filter>
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Core\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Core\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Core\ResourceManager\TextureManager</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Core\ResourceManager\TextureManager</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelManager.cpp">
+      <Filter>Core\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Core\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Framework\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Core\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Billboard.cpp">
+      <Filter>Core\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Core\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h">
       <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="SystemDefinitions.h">
       <Filter>Framework</Filter>
@@ -59,16 +107,55 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Systems</Filter>
+      <Filter>Framework\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
-      <Filter>Systems</Filter>
+      <Filter>Framework\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
-      <Filter>Systems</Filter>
+      <Filter>Framework\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Framework\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Core\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Core\Entities</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>Core</Filter>
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Core\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Core\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Core\ResourceManager\TextureManager</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Core\ResourceManager\TextureManager</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.h">
+      <Filter>Core\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Core\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Framework\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Core\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Billboard.h">
+      <Filter>Core\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Core\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -81,5 +168,24 @@
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Resources</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="brick_texture.jpg">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="stone_texture.jpg">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="doomenemy.png">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="maptesting.txt">
+      <Filter>Resources</Filter>
+    </Text>
+    <Text Include="test.txt">
+      <Filter>Resources</Filter>
+    </Text>
   </ItemGroup>
 </Project>

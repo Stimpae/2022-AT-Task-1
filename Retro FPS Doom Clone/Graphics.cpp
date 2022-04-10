@@ -8,6 +8,7 @@ Graphics::Graphics()
     // create the independent and dependent device resources
     CreateDeviceIndependentResources();
     CreateDeviceResources();
+   
 }
 
 // Configures device resources that don't depend on the 3D device (2d)
@@ -28,6 +29,8 @@ void Graphics::CreateDeviceIndependentResources()
     // Not sure that i actually need this if i'm using the DirectXTex?
     Error::ThrowIfFailed(CoCreateInstance(CLSID_WICImagingFactory2,nullptr,
         CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&m_wicFactory)), "Creating WIC Imaging Factory");
+
+   
 }
 
 // Create the DirectX device and device context;
@@ -121,30 +124,71 @@ void Graphics::InitialiseBackBuffer()
     Error::ThrowIfFailed(m_swapChain->GetBuffer(0,__uuidof(ID3D11Texture2D),(void**)&m_backBuffer), 
         "Get Backbuffer");
 
-    // Creates the render target view
+    // Creates the render target view.
     Error::ThrowIfFailed(m_d3dDevice->CreateRenderTargetView(m_backBuffer.Get(),nullptr,
         m_renderTargetView.GetAddressOf()), "Create RenderTargetView");
 
     m_backBuffer->GetDesc(&m_bbDesc);
 
-    // Create a depth-stencil view for use with 3D rendering if needed.
-    CD3D11_TEXTURE2D_DESC depthStencilDesc(DXGI_FORMAT_D24_UNORM_S8_UINT,static_cast<UINT> (m_bbDesc.Width),
-        static_cast<UINT> (m_bbDesc.Height),1, 1, D3D11_BIND_DEPTH_STENCIL);
+    // Outline the Depth Stencil description.
+    D3D11_DEPTH_STENCIL_DESC stencilDesc = {};
+    stencilDesc.DepthEnable = TRUE;
+    stencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    stencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
-    // Create the depth stencil buffer (zbuffer)
+    // create the depth stencil state
+    Error::ThrowIfFailed(m_d3dDevice->CreateDepthStencilState(&stencilDesc, &m_depthStencilState), 
+        "Creating the depth stencil state");
+
+    // Create a depth-stencil view for use with 3D rendering if needed.
+    D3D11_TEXTURE2D_DESC depthStencilDesc = {};
+    depthStencilDesc.Width = 1024;
+    depthStencilDesc.Height = 768;
+    depthStencilDesc.MipLevels = 1;
+    depthStencilDesc.ArraySize = 1;
+    depthStencilDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+    depthStencilDesc.SampleDesc.Count = 1;
+    depthStencilDesc.SampleDesc.Quality = 0;
+    depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthStencilDesc.CPUAccessFlags = 0;
+    depthStencilDesc.MiscFlags = 0;
+
+    // Create the depth stencil texture
     Error::ThrowIfFailed(m_d3dDevice->CreateTexture2D(&depthStencilDesc,nullptr,&m_depthStencilBuffer
     ), "Create the depth stencil buffer");
 
-    CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
+    D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+    depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthStencilViewDesc.Flags = 0;
+    depthStencilViewDesc.Texture2D.MipSlice = 0;
 
     // Create the depth stencil view (zbuffer)
     Error::ThrowIfFailed(m_d3dDevice->CreateDepthStencilView(m_depthStencilBuffer.Get(),&depthStencilViewDesc,&m_depthStencilView
     )," Create the depth stencil view");
 
+    D3D11_BLEND_DESC blendStateDesc = {};
+
+    blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+    Error::ThrowIfFailed(m_d3dDevice->CreateBlendState(&blendStateDesc, &m_alphaEnabledBlendState), "Create alpha blend state");
+
+    blendStateDesc.RenderTarget[0].BlendEnable = false;
+    
+    Error::ThrowIfFailed(m_d3dDevice->CreateBlendState(&blendStateDesc, &m_alphaDisabledBlendState), "Create alpha blend state");
+
     // Set the 3D rendering viewport to target the entire window.
     ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));
-    m_viewport.Height = (float)m_bbDesc.Height;
-    m_viewport.Width = (float)m_bbDesc.Width;
+    m_viewport.Height = (float)SCREEN_HEIGHT;
+    m_viewport.Width = (float)SCREEN_WIDTH;
     m_viewport.MinDepth = 0;
     m_viewport.MaxDepth = 1;
 
@@ -201,6 +245,9 @@ void Graphics::BeginScene(float r, float g, float b, float a)
     // Clears the stencil view
     m_d3dDeviceContext->ClearDepthStencilView(m_depthStencilView.Get(),D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,1.0f,0);
 
+    // Sets the depth stencil state.
+    m_d3dDeviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 1);
+
     // Set the render target.
     m_d3dDeviceContext->OMSetRenderTargets(1,m_renderTargetView.GetAddressOf(),m_depthStencilView.Get());
 }
@@ -209,6 +256,24 @@ void Graphics::EndScene()
 {
     // Presents the current view to screen
     m_swapChain->Present(1, 0);
+}
+
+void Graphics::EnableAlphaBlending(bool enabled)
+{
+    float blendFactor[4];
+    blendFactor[0] = 0.0f;
+    blendFactor[0] = 0.0f;
+    blendFactor[0] = 0.0f;
+    blendFactor[0] = 0.0f;
+
+    if (enabled)
+    {
+        m_d3dDeviceContext->OMSetBlendState(m_alphaEnabledBlendState.Get(), blendFactor, 0xffffffff);
+    }
+    else
+    {
+        m_d3dDeviceContext->OMSetBlendState(m_alphaDisabledBlendState.Get(), blendFactor, 0xffffffff);
+    }
 }
 
 

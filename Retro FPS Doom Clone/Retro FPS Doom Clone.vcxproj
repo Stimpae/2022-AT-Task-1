@@ -151,25 +151,49 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Billboard.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Billboard.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="ErrorHelper.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Level.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ShaderStructures.h" />
     <ClInclude Include="SystemDefinitions.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -195,6 +219,15 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="brick_texture.jpg" />
+    <Image Include="doomenemy.png" />
+    <Image Include="stone_texture.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="maptesting.txt" />
+    <Text Include="test.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

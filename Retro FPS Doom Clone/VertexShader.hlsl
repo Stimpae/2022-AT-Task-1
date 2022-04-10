@@ -5,21 +5,21 @@ void main(uint3 DTid : SV_DispatchThreadID)
 
 cbuffer ModelViewProjectionConstantBuffer : register(b0)
 {
-	matrix model;
-	matrix view;
-	matrix projection;
+	float4x4 model;
+	float4x4 view;
+	float4x4 projection;
 };
 
 struct VertexShaderInput
 {
 	float3 pos : POSITION;
-	float3 color : COLOR0;
+	float3 tex : TEXCOORD0;
 };
 
 struct PixelShaderInput
 {
 	float4 pos : SV_POSITION;
-	float3 color : COLOR0;
+	float3 tex : TEXCOORD0;
 };
 
 PixelShaderInput vsmain(VertexShaderInput input)
@@ -32,7 +32,7 @@ PixelShaderInput vsmain(VertexShaderInput input)
 	pos = mul(pos, projection);
 	output.pos = pos;
 
-	output.color = input.color;
+	output.tex = input.tex;
 
 	return output;
 }

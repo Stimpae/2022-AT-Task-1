@@ -2,9 +2,9 @@
 #include "pch.h"
 
 // window position
-#define SCREEN_WIDTH 1280
+#define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
-#define WINDOW_POSX 1630
+#define WINDOW_POSX 85
 #define WINDOW_POSY 85
 
 // camera

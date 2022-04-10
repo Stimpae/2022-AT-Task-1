@@ -2,6 +2,8 @@
 #include <iostream>
 #include "SystemDefinitions.h"
 #include "Game.h"
+#include "Input.h"
+#include "Timer.h"
 
 using namespace std;
 using namespace DirectX;
@@ -35,14 +37,19 @@ void Framework::Run(std::shared_ptr<Graphics> _graphics, std::shared_ptr<Rendere
 	MSG msg{};
 	ZeroMemory(&msg, sizeof(MSG));
 
+	std::shared_ptr<Timer> timer = std::shared_ptr<Timer>(new Timer());
+
+	// Initialise the input system
+	std::shared_ptr<Input> input = std::shared_ptr<Input>(new Input());
+	input->Initialise(m_hInstance, GetHWND());
+
 	// Initialise the game 
 	std::shared_ptr<Game> game = std::shared_ptr<Game>(new Game());
-
-	if (!game->Initialise(_renderer))
+	if (!game->Initialise(_renderer, timer))
 	{
 		MessageBox(NULL, L"Failed to create game", L"Error", MB_OK);
 	}
-	
+
 	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -52,13 +59,18 @@ void Framework::Run(std::shared_ptr<Graphics> _graphics, std::shared_ptr<Rendere
 		}
 		else
 		{
+			timer->Update();
+
 			// start to draw the scene
 			_graphics->BeginScene(90, 171, 66, 1.0f);
+				
+			game->Render();
+			game->Update(timer->GetDeltaTicksInSeconds());
+			
+			input->Update();
 
 			// renderer and update the game
-			game->Render();
-			game->Update();
-
+			game->OnInputReceived(input.get());
 			// present
 			_graphics->EndScene();
 		}

@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Retro FPS Doom Clone", "Retro FPS Doom Clone\Retro FPS Doom Clone.vcxproj", "{B2F6C43F-5BB3-4429-BCE5-5E5E30CC852B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{339B76DE-2953-4CBE-A4D3-B43E78480861}"
+	ProjectSection(SolutionItems) = preProject
+		Retro FPS Doom Clone\enemy.png = Retro FPS Doom Clone\enemy.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
