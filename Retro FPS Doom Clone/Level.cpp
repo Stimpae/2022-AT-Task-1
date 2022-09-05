@@ -289,12 +289,14 @@ void Level::CreateLevelMap()
 				// no break will cause the floors to be built anyway
 				m_startPosition = { static_cast<float>(xPos), 0.2f, static_cast<float>(zPos) };
 				m_camera->SetPosition(m_startPosition.x, m_startPosition.y, m_startPosition.z);
+
 			}
 			case 'E':
 			{
 				m_enemy = std::make_unique<Billboard>();
 				m_enemy->SetPosition({ static_cast<float>(xPos), 0, static_cast<float>(zPos) });
 				m_enemy->SetScale({ 2,2,2 });
+		
 			}
 			case '~': // floor
 			{

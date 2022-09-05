@@ -223,6 +223,9 @@
   <ItemGroup>
     <Image Include="brick_texture.jpg" />
     <Image Include="doomenemy.png" />
+    <Image Include="Image.jpg" />
+    <Image Include="Image1.jpg" />
+    <Image Include="new.png" />
     <Image Include="stone_texture.jpg" />
   </ItemGroup>
   <ItemGroup>

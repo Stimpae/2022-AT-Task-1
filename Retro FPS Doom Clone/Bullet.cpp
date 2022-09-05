@@ -34,10 +34,11 @@ void Bullet::Render(Renderer* renderer, Camera* camera, double delta)
 	{
 		m_bulletCube->Render(renderer, camera);
 
-		// add the bullet position stuff here.. increase its direct
+		// increase the bullets x & z postion based off the the bullet movement direction.
 		float posX = m_bulletCube->GetPosition().x + m_position.x / 4;
 		float posZ = m_bulletCube->GetPosition().z + m_position.z / 4;
 
+		// update the bullets position
 		m_bulletCube->SetPosition({ posX, m_position.y, posZ });
 
 		// delete this when the bullet has been in the scene longer than neccessary

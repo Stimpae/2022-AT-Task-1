@@ -129,7 +129,7 @@ void Graphics::InitialiseBackBuffer()
         m_renderTargetView.GetAddressOf()), "Create RenderTargetView");
 
     m_backBuffer->GetDesc(&m_bbDesc);
-
+    m_backBuffer->Release();
     // Outline the Depth Stencil description.
     D3D11_DEPTH_STENCIL_DESC stencilDesc = {};
     stencilDesc.DepthEnable = TRUE;

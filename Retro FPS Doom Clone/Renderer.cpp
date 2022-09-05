@@ -205,8 +205,6 @@ void Renderer::Render()
 
 	// Set up the pixel shader
 	deviceContext->PSSetShader(m_pixelShader.Get(),nullptr,0);
-
-	//UpdateConstantBuffer(m_constantBufferData);
 }
 
 void Renderer::UpdateConstantBuffer(ModelViewProjectionConstantBuffer buffer, unsigned int _indexCount)
@@ -220,12 +218,10 @@ void Renderer::UpdateConstantBuffer(ModelViewProjectionConstantBuffer buffer, un
 	
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Prepare the constant buffer to send it to the graphics device.
 	deviceContext->UpdateSubresource(m_constantBuffer.Get(), 0, NULL, &buffer, 0, 0);
-
-	deviceContext->DrawIndexed(_indexCount, 0, 0);
-	// Draw the object (assign this individualy to each object instead of like this?
 	
+	// Draw the object (assign this individualy to each object instead of like this?
+	deviceContext->DrawIndexed(_indexCount, 0, 0);
 }
 
 void Renderer::UpdatePixelShaderResources(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> resources)

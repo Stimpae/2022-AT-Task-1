@@ -179,6 +179,15 @@
     <Image Include="doomenemy.png">
       <Filter>Resources</Filter>
     </Image>
+    <Image Include="Image.jpg">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="Image1.jpg">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="new.png">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="maptesting.txt">
